@@ -12,7 +12,7 @@ from crewai_tools import SerperDevTool
 # Initialize the tool for internet searching capabilities
 tool = SerperDevTool()
 
-os.environ ["GROQ_API_KEY"] = "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"
+os.environ ["GROQ_API_KEY"] = 'GROQ_API_KEY'
 llm = ChatGroq(temperature = 0.2,model_name="llama3-70b-8192")
 
 
