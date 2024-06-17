@@ -2,16 +2,36 @@
 # pip install crewai==0.22.5 streamlit==1.32.2
 import streamlit as st
 import os
+import fitz
 from crewai import Crew, Process, Agent, Task
 from crewai_tools.tools.pdf_search_tool.pdf_search_tool import PDFSearchTool
 from langchain_core.callbacks import BaseCallbackHandler
 from typing import TYPE_CHECKING, Any, Dict, Optional
 from langchain_openai import ChatOpenAI
 from langchain_groq import ChatGroq
-from crewai_tools import SerperDevTool
+import fitz
+
+st.title("💬 Startup Analyst")
+pdf_document = st.file_uploader("Upload Resume", type="pdf", help="Please upload pdf")
+# Define the path to the PDF file
+# pdf_path = 'Pitch 1.5.pdf'
+
+# Open the PDF file
+if pdf_document is not None:
+    pdf_document=fitz.open(stream=pdf_document.read(), filetype="pdf")
+    # Initialize an empty list to store the text from each page
+    pdf_text = []
+
+    # Iterate through each page and extract text
+    for page_num in range(pdf_document.page_count):
+        page = pdf_document.load_page(page_num)
+        page_text = page.get_text("text")
+        pdf_text.append(page_text)
+    full_text = "\n".join(pdf_text)
+
+
 
 # Initialize the tool for internet searching capabilities
-tool = SerperDevTool()
 
 os.environ ["GROQ_API_KEY"] = "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"
 llm = ChatGroq(temperature = 0.2,model_name="llama3-70b-8192")
@@ -20,28 +40,28 @@ llm = ChatGroq(temperature = 0.2,model_name="llama3-70b-8192")
 avators = {"Writer": "https://cdn-icons-png.flaticon.com/512/320/320336.png",
            "Reviewer": "https://cdn-icons-png.freepik.com/512/9408/9408201.png"}
 
-pdf_search_tool = PDFSearchTool(
-    pdf=r'C:\Users\User\PycharmProjects\NonTech\Divyansh-CV-AI-May.pdf',
-    config=dict(
-        llm=dict(
-            provider="google", # or google, openai, anthropic, llama2, ...
-            config=dict(
-                model="gemini-1.5-flash",
-                # temperature=0.5,
-                # top_p=1,
-                # stream=true,
-            ),
-        ),
-        embedder=dict(
-            provider="google", # or openai, ollama, ...
-            config=dict(
-                model="models/text-embedding-004",
-                task_type="retrieval_document",
-                # title="Embeddings",
-            ),
-        ),
-    )
-)
+# pdf_search_tool = PDFSearchTool(
+#     pdf=r'C:\Users\User\PycharmProjects\NonTech\Divyansh-CV-AI-May.pdf',
+#     config=dict(
+#         llm=dict(
+#             provider="google", # or google, openai, anthropic, llama2, ...
+#             config=dict(
+#                 model="gemini-1.5-flash",
+#                 # temperature=0.5,
+#                 # top_p=1,
+#                 # stream=true,
+#             ),
+#         ),
+#         embedder=dict(
+#             provider="google", # or openai, ollama, ...
+#             config=dict(
+#                 model="models/text-embedding-004",
+#                 task_type="retrieval_document",
+#                 # title="Embeddings",
+#             ),
+#         ),
+#     )
+# )
 # class MyCustomHandler(BaseCallbackHandler):
 #
 #     def __init__(self, agent_name: str) -> None:
@@ -60,94 +80,138 @@ pdf_search_tool = PDFSearchTool(
 #         st.chat_message(self.agent_name, avatar=avators[self.agent_name]).write(outputs['output'])
 
 
-marketer=Agent(
-    role="Market Research Analyst",
-    goal="Find out how big is the demand for my products and suggest how to reach widest possible customer base",
-    backstory="""You are an expert at understanding the market demand, target audience and competition.
-    This is crucial for validating whether an idea fulfills a market need and has the potential to attract a wide audience
-    You are good at coming up with ideas on how to appeal to widest possible audience""",
+market_research_agent = Agent(
+    role='Market Research Analyst',
+    goal='Extract market size and market research information from the {prompt}',
     verbose=True,
-    llm=llm,
+    memory=True,
+    backstory=(
+        "You are an expert in market analysis, skilled at identifying key market trends and insights from various texts."
+    ),
+    # tools=[pdf_search_tool],
+    llm = llm,
     allow_delegation=True,
-    max_iter=10,
-    tools=[tool],
+    max_iter=10
 )
 
-technologist=Agent(
-    role="Technology Expert",
-    goal="Make assessment on how technologically feasible the company is and what type of technologies the company needs to adopt in order to succeed.",
-    backstory="""You are a visionary in the realm of technology, with a deep understanding of 
-    both current and future technologies and trends. Your expertise lies not just in knowing the technology but in foreseeing how it can be leveraged to solve real world problems and drive business innovation
-    You have a knack for understanding which technological solutions best fit different business models and needs ensuringthat companies stay ahead of their competitors and emerge as market leaders
-    Your insights are crucial in in aligning technology with business strategies, ensuring that the tech adoption not only enhances operational efficiency but also provides a competitive edge in the market""",
+business_model_agent = Agent(
+    role='Business Analyst',
+    goal='Extract business model information from the {prompt}',
     verbose=True,
+    memory=True,
+    backstory=(
+        "You have a deep understanding of business models and are adept at dissecting them from any business document."
+    ),
+    # tools=[pdf_search_tool],
+    llm = llm,
     allow_delegation=True,
-    max_iter=10,
-    llm=llm,
-    tools=[tool]
+max_iter=10
+
+
+
 )
-consultant=Agent(
-    role="Business Development Consultant",
-    goal="Evaluate and advise on the business model, scalability, and potential revenue streams to ensure long term sustainability and profitability",
-    backstory="""You are a seasoned professional with expertise in shaping business startegies. Your insights are essential for tunring innovative ideas into viable, scalable and successful business models.
-    You have a keen understanding of various industries and are adept at identifying and developing potential revenue streams.
-    Your experience in scalability ensures that a business can grow without compromising with its values or operational efficiency. Your
-    advice is not just about immediate gains but about building a resilient and adaptable business that can thrive in a changing market.
-    """,
+
+technology_agent = Agent(
+    role='Technology Specialist',
+    goal='Extract information on the technology used from the {prompt}',
     verbose=True,
-    allow_delegation=False,
-    max_iter=10,
-    llm=llm,
+    memory=True,
+    backstory=(
+        "With a keen eye for technological details, you excel at uncovering the specifics of technologies used in various contexts."
+    ),
+    # tools=[pdf_search_tool],
+    llm = llm,
+    allow_delegation=True,
+max_iter=10
 )
 
-st.title("💬 Startup Analyst")
+revenue_model_agent = Agent(
+    role='Financial Analyst',
+    goal='Extract revenue model information from the {prompt}',
+    verbose=True,
+    memory=True,
+    backstory=(
+        "You specialize in financial analysis and have a knack for identifying revenue models in business documents."
+    ),
+    # tools=[pdf_search_tool],
+    llm = llm,
+    allow_delegation=True,
+max_iter=10
+)
 
-if "messages" not in st.session_state:
-    st.session_state["messages"] = [{"role": "assistant", "content": "What are you planning to build"}]
 
-for msg in st.session_state.messages:
-    st.chat_message(msg["role"]).write(msg["content"])
 
-if prompt := st.chat_input():
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    st.chat_message("user").write(prompt)
+# if "messages" not in st.session_state:
+#     st.session_state["messages"] = [{"role": "assistant", "content": "What are you planning to build"}]
+#
+# for msg in st.session_state.messages:
+#     st.chat_message(msg["role"]).write(msg["content"])
+#
+# if prompt := st.chat_input():
+#     st.session_state.messages.append({"role": "user", "content": prompt})
+#     st.chat_message("user").write(prompt)
+submit1 = st.button("Pitch Deck Summary")
 
-    task1 = Task(
-        description=f"Analyze the market demand for business idea: {prompt} in India as well as the rest of the world."
-                    "Specify the size of target market, customer demographics, user persona and existing competitors"
-                    "Write a detailed report with descriptions of what the ideal customer must look like, and how to reach the "
-                    "wildest possible audience. The report has to be concise  with atleast 10 bullet points and it has to address "
-                    "the most important ideas when it comes to marketing this type of business ",
-        agent=marketer,
-        expected_output="create a 1000 word report giving details about the market analysis",
-        tools=[tool]
+if submit1:
+    if full_text is not None:
+
+        st.subheader("The response is")
+
+    # Define the tasks
+    market_research_task = Task(
+        description=(
+            "Extract the market size and market research information from the provided {prompt}"
+            "Focus on identifying key market trends, target demographics, and market potential."
+        ),
+        expected_output='A summary of the market size and market research findings.',
+        # tools=[pdf_search_tool],
+        agent=market_research_agent,
     )
-    task2 = Task(
-        description=f"Analyze how can we incorporate technology in the business idea : {prompt} to provide the most optimised and seemless experience to user"
-                    "and to solve the problem more efficiently"
-                    "The solution should be most efficient and feasible technologically"
-                    "write atleast 10 bullet points and the report must be concise and must address the most important aspects and ares when it comes to this kind of tech business",
-        agent=technologist,
-        expected_output="curate a 1000 word report suggesting the tech solutions and steps to implement them",
-        tools=[tool]
+
+    business_model_task = Task(
+        description=(
+            "Extract the business model information from the provided {prompt}. "
+            "Focus on how the business operates, its value proposition, and its key activities."
+        ),
+        expected_output='A detailed description of the business model.',
+        # tools=[pdf_search_tool],
+        agent=business_model_agent,
     )
 
-    task3 = Task(
-        description="Analyse and summarise marketing and technological report and write a detailed business plan with description of how"
-                    f"to make a sustainable and profitable business for {prompt} so that this business is scalable, profitable and sustainable"
-                    "The report has to be concise with atleast 10 bullet points covering the most important aspects and areas for this business, format the output as a markdown file ",
-        agent=consultant,
-        expected_output=f"Prepare a detailed report summarising the complete B-Plan that can act as a handbook to build a successful business on the idea: {prompt}",
-        output_file='B-Plan.md'
+    technology_task = Task(
+        description=(
+            "Extract the technology used from the provided {prompt}. "
+            "Focus on the main technologies employed and their applications."
+        ),
+        expected_output='A summary of the technologies used in the business.',
+        # tools=[pdf_search_tool],
+        agent=technology_agent,
     )
 
+    revenue_model_task = Task(
+        description=(
+            "Extract the revenue model information from the provided {prompt}. "
+            "Focus on how the business generates revenue, including pricing strategies and revenue streams."
+        ),
+        expected_output='A comprehensive overview of the revenue model.',
+        # tools=[pdf_search_tool],
+        agent=revenue_model_agent,
+    )
+
+    # Define the crew
     crew = Crew(
-        agents=[marketer, technologist, consultant],
-        tasks=[task1, task2, task3],
+        agents=[market_research_agent, business_model_agent, technology_agent, revenue_model_agent],
+        tasks=[market_research_task, business_model_task, technology_task, revenue_model_task],
         process=Process.sequential,
+        rpm=5000
     )
-    final = crew.kickoff()
 
-    result = f"## Here is the Final Result \n\n {final}"
+    # Function to kickoff the crew with the pitch deck PDF
+    result = crew.kickoff(inputs={"prompt": full_text})
+
+    result = f"## Here is the Final Result \n\n {full_text}"
     st.session_state.messages.append({"role": "assistant", "content": result})
     st.chat_message("assistant").write(result)
+
+
+

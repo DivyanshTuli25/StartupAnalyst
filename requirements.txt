@@ -5,3 +5,4 @@ langchain_google_genai
 load_dotenv
 langchain_groq
 streamlit
+pymupdf
