@@ -2,7 +2,6 @@
 # pip install crewai==0.22.5 streamlit==1.32.2
 import streamlit as st
 import os
-import fitz
 from crewai import Crew, Process, Agent, Task
 from crewai_tools.tools.pdf_search_tool.pdf_search_tool import PDFSearchTool
 from langchain_core.callbacks import BaseCallbackHandler
@@ -28,6 +27,7 @@ if pdf_document is not None:
         page_text = page.get_text("text")
         pdf_text.append(page_text)
     full_text = "\n".join(pdf_text)
+    print(full_text)
 
 
 
@@ -209,9 +209,10 @@ if submit1:
     # Function to kickoff the crew with the pitch deck PDF
     result = crew.kickoff(inputs={"prompt": full_text})
 
-    result = f"## Here is the Final Result \n\n {full_text}"
-    st.session_state.messages.append({"role": "assistant", "content": result})
-    st.chat_message("assistant").write(result)
+    result = f"## Here is the Final Result \n\n {result}"
+    # st.session_state.messages.append({"role": "assistant", "content": result})
+    st.write(result)
+
 
 
 
