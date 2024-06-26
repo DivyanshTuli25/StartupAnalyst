@@ -154,7 +154,8 @@ if submit1:
         crew = Crew(
             agents=[site_info, market_research_agent, business_model_agent, technology_agent, revenue_model_agent],
             tasks=[site_research_task, market_research_task, business_model_task, technology_task, revenue_model_task],
-            process=Process.sequential,
+            process=Process
+            .sequential,
             rpm=5000
         )
 
@@ -163,7 +164,7 @@ if submit1:
 
         # Display the result
         result_display = f"## Here is the Final Result \n\n {result}"
-        st.session_state.messages.append({"role": "assistant", "content": result_display})
+        # st.session_state.messages.append({"role": "assistant", "content": result_display})
         st.write(result_display)
     else:
         st.write("Please upload a PDF and enter a valid URL to start the analysis.")

@@ -66,11 +66,12 @@ technologist=Agent(
 )
 consultant=Agent(
     role="Business Development Consultant",
-    goal="Evaluate and advise on the business model, scalability, and potential revenue streams to ensure long term sustainability and profitability",
+    goal="Evaluate and advise on the business model, scalability, and potential revenue streams to ensure long term sustainability and profitability. Suggest ways to improve the business model",
     backstory="""You are a seasoned professional with expertise in shaping business startegies. Your insights are essential for tunring innovative ideas into viable, scalable and successful business models.
     You have a keen understanding of various industries and are adept at identifying and developing potential revenue streams.
     Your experience in scalability ensures that a business can grow without compromising with its values or operational efficiency. Your
     advice is not just about immediate gains but about building a resilient and adaptable business that can thrive in a changing market.
+    Provide constructive criticism to the user to improve the business model. 
     """,
     verbose=True,
     allow_delegation=False,
@@ -115,7 +116,7 @@ if prompt := st.chat_input():
                     f"to make a sustainable and profitable business for {prompt} so that this business is scalable, profitable and sustainable"
                     "The report has to be concise with atleast 10 bullet points covering the most important aspects and areas for this business, format the output as a markdown file ",
         agent=consultant,
-        expected_output=f"Prepare a detailed report summarising the complete B-Plan that can act as a handbook to build a successful business on the idea: {prompt}",
+        expected_output=f"Provide constructive criticism to the user by suggesting improvements in the B-Plan to ensure long term business sustainability and profitability based on : {prompt}",
         output_file='B-Plan.md'
     )
 
