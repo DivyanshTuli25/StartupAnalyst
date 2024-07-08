@@ -7,7 +7,7 @@ import fitz
 from collections import Counter
 
 # Setup API keys and models
-os.environ["GROQ_API_KEY"] = "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"
+os.environ["GROQ_API_KEY"] = "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"
 llm = ChatGroq(temperature=0.2, model_name="llama3-70b-8192")
 
 # Initialize the tool for internet searching capabilities
