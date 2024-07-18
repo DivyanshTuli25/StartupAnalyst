@@ -8,10 +8,10 @@ from collections import Counter
 from streamlit_option_menu import option_menu
 
 # Setup API keys and models
-os.environ["GROQ_API_KEY_1"] = GROQ_API_KEY_1
+os.environ["GROQ_API_KEY_1"] = "GROQ_API_KEY_1"
 llm1 = ChatGroq(temperature=0.2, model_name="llama3-8b-8192", )
 
-os.environ["GROQ_API_KEY_2"] = GROQ_API_KEY_2
+os.environ["GROQ_API_KEY_2"] = "GROQ_API_KEY_2"
 llm2 = ChatGroq(temperature=0.2, model_name="llama3-8b-8192")
 # Initialize the tool for internet searching capabilities
 search_tool = SerperDevTool()
@@ -48,7 +48,7 @@ if selected == "Home":
         backstory=(
             "You are an expert in conducting thorough research on companies. With your skills, you delve deep into the provided websites to extract vital information about the company's history, mission, vision, products, services, market presence, competitors, and any other relevant data. Your detailed findings help other agents enhance their understanding and analysis of the company's business model, market strategy, technology use, and revenue streams."
         ),
-        llm=llm,
+        llm=llm1,
         allow_delegation=True,
         tools=[search_tool],
         # max_iter=4,
@@ -64,7 +64,7 @@ if selected == "Home":
         backstory=(
             "You are an expert in market analysis, skilled at identifying key market trends and insights from various texts."
         ),
-        llm=llm,
+        llm=llm1,
         allow_delegation=True,
         # max_iter=4,
         max_rpm=3000,
@@ -78,7 +78,7 @@ if selected == "Home":
         backstory=(
             "You have a deep understanding of business models and are adept at dissecting them from any business document."
         ),
-        llm=llm,
+        llm=llm1,
         allow_delegation=True,
         # max_iter=5,
         max_rpm=3000,
@@ -92,7 +92,7 @@ if selected == "Home":
         backstory=(
             "With a keen eye for technological details, you excel at uncovering the specifics of technologies used in various contexts."
         ),
-        llm=llm,
+        llm=llm1,
         allow_delegation=True,
         # max_iter=5,
         max_rpm=3000,
@@ -106,7 +106,7 @@ if selected == "Home":
         backstory=(
             "You specialize in financial analysis and have a knack for identifying revenue models in business documents."
         ),
-        llm=llm,
+        llm=llm1,
         allow_delegation=True,
         # max_iter=5,
         max_rpm=3000,
@@ -204,7 +204,7 @@ if selected == "Home":
             "You are good at coming up with ideas on how to appeal to the widest possible audience."
         ),
         verbose=True,
-        llm=llm,
+        llm=llm2,
         allow_delegation=True,
         max_iter=10,
         tools=[search_tool],
@@ -222,7 +222,7 @@ if selected == "Home":
         verbose=True,
         allow_delegation=True,
         max_iter=10,
-        llm=llm,
+        llm=llm2,
         tools=[search_tool]
     )
 
@@ -240,7 +240,7 @@ if selected == "Home":
         verbose=True,
         allow_delegation=False,
         max_iter=10,
-        llm=llm,
+        llm=llm2,
     )
 
     # Button to trigger the second part of the analysis
