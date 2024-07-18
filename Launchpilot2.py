@@ -8,11 +8,10 @@ from collections import Counter
 from streamlit_option_menu import option_menu
 
 # Setup API keys and models
-os.environ["GROQ_API_KEY_1"] = "GROQ_API_KEY_1"
+groq_api_key = os.environ["GROQ_API_KEY_1"]
 llm1 = ChatGroq(temperature=0.2, model_name="llama3-8b-8192", )
 
-os.environ["GROQ_API_KEY_2"] = "GROQ_API_KEY_2"
-llm2 = ChatGroq(temperature=0.2, model_name="llama3-8b-8192")
+
 # Initialize the tool for internet searching capabilities
 search_tool = SerperDevTool()
 
@@ -195,6 +194,10 @@ if selected == "Home":
             st.error("Please upload a PDF and enter a valid URL to start the analysis.")
 
     # Define agents and tasks for the second part of the analysis
+
+    groq_api_key = os.environ["GROQ_API_KEY_2"]
+    llm2 = ChatGroq(temperature=0.2, model_name="llama3-8b-8192")
+
     marketer = Agent(
         role="Market Research Analyst",
         goal="Find out how big is the demand for my products and suggest how to reach the widest possible customer base",
