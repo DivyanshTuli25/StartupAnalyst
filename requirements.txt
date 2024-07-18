@@ -7,3 +7,4 @@ langchain_groq
 streamlit
 pymupdf
 streamlit-option-menu
+streamlit-extras

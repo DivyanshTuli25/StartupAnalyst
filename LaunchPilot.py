@@ -33,7 +33,7 @@ site_info = Agent(
     llm=llm,
     allow_delegation=True,
     tools=[search_tool],
-    max_iter=7
+    max_iter=2
 )
 
 market_research_agent = Agent(
@@ -46,7 +46,7 @@ market_research_agent = Agent(
     ),
     llm=llm,
     allow_delegation=True,
-    max_iter=10
+    max_iter=5
 )
 
 business_model_agent = Agent(
@@ -59,7 +59,7 @@ business_model_agent = Agent(
     ),
     llm=llm,
     allow_delegation=True,
-    max_iter=10
+    max_iter=5
 )
 
 technology_agent = Agent(
@@ -72,7 +72,7 @@ technology_agent = Agent(
     ),
     llm=llm,
     allow_delegation=True,
-    max_iter=10
+    max_iter=5
 )
 
 revenue_model_agent = Agent(
@@ -85,7 +85,7 @@ revenue_model_agent = Agent(
     ),
     llm=llm,
     allow_delegation=True,
-    max_iter=10
+    max_iter=5
 )
 
 # Process the uploaded PDF
@@ -108,7 +108,7 @@ if submit1:
         # Define the tasks for the first part
         site_research_task = Task(
             description="Extract comprehensive information about the company from the provided {URL}. Focus on the company's history, mission, vision, products, services, market presence, competitors, and any other relevant data.",
-            expected_output='Detailed company information extracted from the site.',
+            expected_output='Detailed company information extracted from the site. Extract the sector in which comapany is working, short overview about what the company is doing.',
             agent=site_info,
             tools=[search_tool]
         )
@@ -224,7 +224,7 @@ if submit2:
     if "first_result" in st.session_state:
         result = st.session_state["first_result"]
         task1 = Task(
-            description=f"Analyze the market demand for business idea: {result} in India as well as the rest of the world. "
+            description=f"Analyze the market demand for business idea: {result} in India as well as the rest of the world."
                         "Specify the size of the target market, customer demographics, user persona, and existing competitors. "
                         "Write a detailed report with descriptions of what the ideal customer must look like, and how to reach the widest possible audience. "
                         "The report has to be concise with at least 10 bullet points and it has to address the most important ideas when it comes to marketing this type of business.",
@@ -262,3 +262,6 @@ if submit2:
     else:
         st.write("Please run the first analysis to get the initial results.")
 
+# Integrate  lead search - from socials
+# Improve prompts
+# location based results
