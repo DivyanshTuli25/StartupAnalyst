@@ -9,7 +9,7 @@ from streamlit_option_menu import option_menu
 
 # Setup API keys and models
 groq_api_key = os.environ["GROQ_API_KEY_1"]
-llm1 = ChatGroq(temperature=0.2, model_name="llama3-8b-8192", )
+llm1 = ChatGroq(temperature=0.2, model_name="llama3-8b-8192")
 
 
 # Initialize the tool for internet searching capabilities
