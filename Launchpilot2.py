@@ -8,9 +8,11 @@ from collections import Counter
 from streamlit_option_menu import option_menu
 
 # Setup API keys and models
-os.environ["GROQ_API_KEY"] = "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"
-llm = ChatGroq(temperature=0.2, model_name="llama3-8b-8192")
+os.environ["GROQ_API_KEY_1"] = GROQ_API_KEY_1
+llm1 = ChatGroq(temperature=0.2, model_name="llama3-8b-8192", )
 
+os.environ["GROQ_API_KEY_2"] = GROQ_API_KEY_2
+llm2 = ChatGroq(temperature=0.2, model_name="llama3-8b-8192")
 # Initialize the tool for internet searching capabilities
 search_tool = SerperDevTool()
 
