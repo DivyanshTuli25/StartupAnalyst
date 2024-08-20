@@ -8,8 +8,8 @@ from collections import Counter
 from streamlit_option_menu import option_menu
 
 # Setup API keys and models
-groq_api_key = os.environ["GROQ_API_KEY_1"]
-llm1 = ChatGroq(temperature=0.2, model_name="llama3-8b-8192")
+os.environ["GROQ_API_KEY"] = "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"
+llm1 = ChatGroq(temperature=0.2, model_name="llama3-70b-8192")
 
 
 # Initialize the tool for internet searching capabilities
@@ -52,7 +52,7 @@ if selected == "Home":
         tools=[search_tool],
         # max_iter=4,
 
-        max_rpm =3000,
+        # max_rpm =3000,
     )
 
     market_research_agent = Agent(
@@ -66,7 +66,7 @@ if selected == "Home":
         llm=llm1,
         allow_delegation=True,
         # max_iter=4,
-        max_rpm=3000,
+        # max_rpm=3000,
     )
 
     business_model_agent = Agent(
@@ -80,7 +80,7 @@ if selected == "Home":
         llm=llm1,
         allow_delegation=True,
         # max_iter=5,
-        max_rpm=3000,
+        # max_rpm=3000,
     )
 
     technology_agent = Agent(
@@ -94,7 +94,7 @@ if selected == "Home":
         llm=llm1,
         allow_delegation=True,
         # max_iter=5,
-        max_rpm=3000,
+        # max_rpm=3000,
     )
 
     revenue_model_agent = Agent(
@@ -108,7 +108,7 @@ if selected == "Home":
         llm=llm1,
         allow_delegation=True,
         # max_iter=5,
-        max_rpm=3000,
+        # max_rpm=3000,
     )
 
     # Process the uploaded PDF
@@ -178,7 +178,7 @@ if selected == "Home":
                 tasks=[site_research_task, market_research_task, business_model_task, technology_task,
                        revenue_model_task],
                 process=Process.sequential,
-                rpm=5000
+                # rpm=5000
             )
 
             # Kickoff the crew with the provided inputs
@@ -195,7 +195,7 @@ if selected == "Home":
 
     # Define agents and tasks for the second part of the analysis
 
-    groq_api_key = os.environ["GROQ_API_KEY_2"]
+    os.environ["GROQ_API_KEY"]="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"
     llm2 = ChatGroq(temperature=0.2, model_name="llama3-8b-8192")
 
     marketer = Agent(
@@ -209,7 +209,7 @@ if selected == "Home":
         verbose=True,
         llm=llm2,
         allow_delegation=True,
-        max_iter=10,
+        # max_iter=10,
         tools=[search_tool],
     )
 
@@ -224,7 +224,7 @@ if selected == "Home":
         ),
         verbose=True,
         allow_delegation=True,
-        max_iter=10,
+        # max_iter=10,
         llm=llm2,
         tools=[search_tool]
     )
@@ -242,7 +242,7 @@ if selected == "Home":
         ),
         verbose=True,
         allow_delegation=False,
-        max_iter=10,
+        # max_iter=10,
         llm=llm2,
     )
 
